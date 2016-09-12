@@ -1,0 +1,15 @@
+/* CSS declarations go here */
+.hidden_div{
+	display:none;
+}
+
+.search {
+    text-align: right;
+}
+
+.easy-search-input {
+    width: 20%;
+    height: 40px;
+    font-size: 15px;
+    padding: 5px 12px;
+}

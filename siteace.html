@@ -1,0 +1,201 @@
+<head>
+  <title>siteace</title>
+</head>
+
+<body>
+
+</body>
+
+<template name="ApplicationLayout">
+  {{> yield "navbar"}}
+  {{> yield "main"}}
+</template>
+
+<template name="navbar">
+	<!-- navbar  - you will be putting the login functions here -->
+	<nav class="navbar navbar-default">
+	  <div class="container">
+	  	
+      <!-- start collapsed navbar-->
+      <div class="navbar-header">
+        <button 
+        type="button" 
+        class="navbar-toggle collapsed" 
+        data-toggle="collapse" 
+        data-target="#main_navbar" 
+        aria-expanded="false">open!</button>
+      </div><!-- / collapsed navbar-->
+      
+      <!-- start un-collapsed navbar-->
+      <div 
+         class="collapse navbar-collapse" 
+         id="main_navbar">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="/">Site Ace</a></li>
+          <!--<li><a href="#">My site</a></li>-->
+          <!--<li><a href="#">{{> loginButtons}}</a></li>-->
+          <!--<li><a href="albums.html">Albums</a></li>-->
+          <!--<li><a href="photos.html">All photos</a></li>-->
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+        	<li><a href="#">{{> loginButtons align="right"}}</a></li>
+        </ul>
+      </div><!-- / un-collapsed navbar-->
+	  	
+	    <!--<div class="navbar-header">-->
+	    <!--  <a class="navbar-brand" href="#">-->
+	    <!--    Site Ace-->
+	    <!--  </a>-->
+  		 <!-- {{> loginButtons}}-->
+	    <!--</div>-->
+	  </div> <!-- / container -->
+	</nav>	
+</template>
+
+<!--template to add a new website-->
+<template name="website_form">
+	<a class="btn btn-default js-toggle-website-form" href="#">Add a website 
+  		<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+	</a>
+	<div id="website_form" class="hidden_div">
+		<form class="js-save-website-form" id="website-form-2">
+		  <div class="form-group">
+		    <label for="url">Site address</label>
+		    <input type="text" class="form-control" id="url" placeholder="http://www.mysite.com">
+		  </div>
+		  <div class="form-group">
+		    <label for="title">Title</label>
+		    <input type="text" class="form-control" id="title" placeholder="Mysite">
+		  </div>
+		    <div class="form-group">
+		    <label for="description">Description</label>
+		    <input type="text" class="form-control" id="description" placeholder="I found this site really useful for ...">
+		  </div>
+
+		  <button type="submit" class="btn btn-default">Submit</button>
+		</form>
+	</div>
+</template>
+
+<!--template to add a comment to a website-->
+<template name="comment_form">
+	<a class="btn btn-default js-toggle-comment-form" href="#"> Add a comment
+  		<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+	</a>
+	<div id="comment_form" class="hidden_div">
+		<form class="js-save-comment-form" id="comment-form-2">
+		    <div class="form-group">
+		    <label for="comment">Comment</label>
+		    <input type="text" class="form-control" id="comment" placeholder="Here is my comment ... ">
+		  </div>
+		  <button type="submit" class="btn btn-default">Submit</button>
+		</form>
+	</div>
+</template>
+
+<!-- template that displays several website items -->
+<template name="website_list">
+	<div class="container">
+		<div class="search">
+			{{> search}}
+		</div>
+		{{#if currentUser}}
+			{{> website_form}}
+			<br/><br/>
+		{{/if}}
+		<ol>
+		{{#each websites}}
+			{{>website_item}}
+		{{/each}}
+		</ol>
+	</div> <!-- / container -->
+</template>
+
+<!-- template that displays individual website entries -->
+<template name="website_item">
+	<li>
+		<section id={{_id}}></section>
+		<a href="{{url}}" target="_blank">{{title}}</a>
+		<p>
+			{{description}}
+		</p>
+		<p>Added on: {{createdOn}}</p>
+		<p>Votes up: {{vote_up}}, Votes down: {{vote_down}}</p>
+		<a href="#" class="btn btn-default js-upvote">
+			<span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+		</a>
+		<a href="#" class="btn btn-default js-downvote">
+			<span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+		</a>
+		<br/><br/>
+		<a href="/{{_id}}" class="btn btn-info btn-md">
+			<span class="glyphicon glyphicon-zoom-in"></span> Details
+		</a>
+		<!-- you will be putting your up and down vote buttons in here! -->
+	</li>
+	<br/>
+</template>
+
+<template name="website_detail">
+	<div class="container">
+		<br/>
+		<a href="{{url}}" target="_blank">{{title}}</a>
+		<p>
+			{{description}}
+		</p>
+		<p>Added on: {{createdOn}}</p>
+		<p>Votes up: {{vote_up}}, Votes down: {{vote_down}}</p>	
+		<p><a href="/" class="btn btn-info btn-md"><span class="glyphicon glyphicon-arrow-left"></span> Return to list</a>
+		</p><br/>
+		{{> comment_form}}
+		<br/><br/>
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th>Comment</th>
+					<th>Posted by</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{#each comments}}
+					{{>comment_item}}
+				{{/each}}
+			</tbody>
+		</table>
+	</div>
+</template>
+
+<!-- template that displays individual comment entries -->
+<template name="comment_item">
+	<tr>
+		<td>{{comment}}</td>
+		<td>{{getUser createdBy}}</td>
+	</tr>
+</template>
+
+<!--template for earch function-->
+<template name="search">
+  {{> EasySearch.Input index=websitesIndex attributes=inputAttributes }}
+
+  {{#EasySearch.IfInputEmpty index=websitesIndex }}
+    <div class="padded examples">Search for a website</div>
+  {{else}}
+		    {{#EasySearch.Each index=websitesIndex}}
+		      <li><a href="/{{_id}}">Title: {{title}} ({{description}})</a></li>
+		    {{/EasySearch.Each}}
+  {{/EasySearch.IfInputEmpty}}
+
+
+  
+  <!--<ul>-->
+  <!--  {{#EasySearch.Each index=websitesIndex}}-->
+  <!--    <li>Title: {{title}} ({{description}})</li>-->
+  <!--  {{/EasySearch.Each}}-->
+  <!--</ul>-->
+
+  <!--{{> EasySearch.LoadMore index=websitesIndex}}-->
+
+  <!--{{#EasySearch.IfNoResults index=websitesIndex}}-->
+  <!--  <div class="no-results">No results found!</div>-->
+  <!--{{/EasySearch.IfNoResults}}-->
+</template>
